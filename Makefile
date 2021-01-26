@@ -6,7 +6,7 @@
 #    By: acyrenna <acyrenna@school21.ru>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/07 23:53:07 by acyrenna          #+#    #+#              #
-#    Updated: 2021/01/07 23:53:25 by acyrenna         ###   ########.fr        #
+#    Updated: 2021/01/26 20:02:34 by acyrenna         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ NAME = corewar
 
 CMAKEDIR = ./tmp/
 LIBDIR = ./libft/
+MAKECMDGOALS=-j 8
 
 all: $(NAME)
 

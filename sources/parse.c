@@ -6,7 +6,7 @@
 /*   By: acyrenna <acyrenna@school21.ru>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 22:40:25 by acyrenna          #+#    #+#             */
-/*   Updated: 2021/01/10 19:07:02 by acyrenna         ###   ########.fr       */
+/*   Updated: 2021/01/26 21:06:00 by acyrenna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,6 @@ t_stack *parse_files(t_list *files)
 			files->content, O_RDONLY), (int) id++, files->content);
 		players->push(players, to_list(player));
 		files = files->next;
-
-		t_list *lst = ft_lstnew(player, sizeof(t_player));
-		ft_printf("%s\n", ((t_player *)lst)->header->name);
 	}
 	ft_lstdel(&saved, (void (*)(void *, size_t)) free);
 	return (players);

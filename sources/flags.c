@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   flags.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acyrenna <acyrenna@school21.ru>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/26 21:04:21 by acyrenna          #+#    #+#             */
+/*   Updated: 2021/01/26 21:05:29 by acyrenna         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "corewar.h"
 
 int		define_flag(char f, char *value, t_corewar_flags *flags)
 {
-	int stf;
+	int	stf;
 	int	int_value;
 
 	int_value = ft_atoi(value);

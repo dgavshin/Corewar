@@ -107,7 +107,7 @@ void			usage(void);
 ** player.c
 */
 t_player		*create_player(int id, t_header *header);
-void 			clean_players(t_player **players, int s);
+void			clean_player(void *content);
 t_player		*get_player(t_corewar *core, int id);
 t_list			*to_list(t_player *player);
 t_player		*from_list(t_list *lst);

@@ -27,9 +27,7 @@ t_corewar	*init_corewar(t_stack *players, int n_of_players,
 
 void		clean_corewar(t_corewar *corewar)
 {
-//	clean_players(corewar->players, corewar->players_num);
-	stack_clean(corewar->players);
-//	stack_clean(corewar->carriage_stack);
+	stack_clean(corewar->players, (void (*)(void *, size_t)) clean_player);
 	free(corewar->flags);
 	free(corewar);
 }
