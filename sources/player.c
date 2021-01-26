@@ -19,6 +19,7 @@ t_player	*create_player(int id, t_header *header)
 	player = (t_player *)ft_memalloc(sizeof(t_player));
 	player->id = id;
 	player->header = header;
+	player->regs[0].val[3] = id;
 	return (player);
 }
 
@@ -33,4 +34,32 @@ void		clean_players(t_player **players, int size)
 		free(players[i++]);
 	}
 	free(players);
+}
+
+t_player	*get_player(t_corewar *core, int id)
+{
+	t_player	*player;
+	t_list		*lst;
+
+	lst = core->players->head;
+	while (lst)
+	{
+		player = from_list(lst);
+		if (player && player->id == id)
+			return (player);
+		lst = lst->next;
+	}
+	return (NULL);
+}
+
+t_list	*to_list(t_player *player)
+{
+	return (ft_lstnew(player, sizeof(t_player)));
+}
+
+t_player *from_list(t_list *lst)
+{
+	if (lst->content_size == sizeof(t_player))
+		return ((t_player *)lst);
+	return (NULL);
 }

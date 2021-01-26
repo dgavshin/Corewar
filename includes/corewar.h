@@ -1,6 +1,7 @@
 #ifndef COREWAR_COREWAR_H
 # define COREWAR_COREWAR_H
 
+#include "stdio.h"
 #include "libft.h"
 #include "op.h"
 
@@ -49,20 +50,22 @@
 */
 # define V_MOVEMENTS 16
 
-# define MAX_ARGS	11
+# define MAX_ARGS	10
 
-typedef union				s_register
+typedef struct				s_register
 {
-
+    unsigned char			val[REG_SIZE];
 }							t_register;
 
 typedef struct 				s_player
 {
-	char 					code[CHAMP_MAX_SIZE + 1];
-	char 					registers[REG_NUMBER][REG_SIZE * 8];
+	unsigned char 			code[CHAMP_MAX_SIZE + 1];
+	struct s_register		regs[REG_NUMBER];
 	struct s_header			*header;
+	int 					cur_op;
+	int 					fine;
+	int 					CF;
 	int 					pos;
-	int 					cf;
 	int 					id;
 }							t_player;
 
@@ -79,17 +82,20 @@ typedef struct 				s_corewar_flags
 
 typedef struct				s_corewar
 {
-	struct s_player			**players;
+	struct s_stack			*players;
 	struct s_corewar_flags	*flags;
+	t_stack					*carriage_stack;
 	int 					players_num;
-	char 					field[MEM_SIZE];
+	int 					last_alive;
+	int 					cycles_to_die;
+	int 					cycles;
+	int 					live_count;
+	unsigned char			field[MEM_SIZE];
 }							t_corewar;
 
 t_corewar		*parse(int args, char **argv);
-void			gexit(char *format, char *f1, char *f2, char *f3);
 int 			sfopen(char *path, int flags);
 void 			*sfread(int fd, void *buf, size_t nbytes, char *path);
-
 int 			parse_args(int as, char **av, t_corewar_flags **fg,
 					 t_list **fl);
 /*
@@ -102,11 +108,14 @@ void			usage(void);
 */
 t_player		*create_player(int id, t_header *header);
 void 			clean_players(t_player **players, int s);
+t_player		*get_player(t_corewar *core, int id);
+t_list			*to_list(t_player *player);
+t_player		*from_list(t_list *lst);
 
 /*
 ** corewar.c
 */
-t_corewar		*init_corewar(t_player **players, int n, t_corewar_flags *f);
+t_corewar		*init_corewar(t_stack *players, int n, t_corewar_flags *f);
 void 			clean_corewar(t_corewar *corewar);
 
 /*
@@ -114,4 +123,26 @@ void 			clean_corewar(t_corewar *corewar);
 */
 int				define_flag(char flag, char *value, t_corewar_flags *flags);
 int		 		is_flag(char *arg);
+
+/*
+** registers
+*/
+unsigned long	rtol(t_register r);
+t_register		ltor(unsigned long b);
+int 			int_representable(t_register r);
+
+t_register		regadd(t_register a, t_register b);
+t_register		regsub(t_register a, t_register b);
+t_register		regmul(t_register a, long b);
+t_register		reglongmul(t_register a, t_register b);
+
+
+/*
+** debug
+*/
+
+void			print_field(t_corewar *core);
+
+
+void			init_game(t_corewar *core);
 #endif

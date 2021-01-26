@@ -62,21 +62,25 @@ int			parse_args(int args, char **argv, t_corewar_flags **flags,
 	return (num_of_files);
 }
 
-t_player	**parse_files(t_list *files, int n)
+t_stack *parse_files(t_list *files)
 {
-	int			i;
+	int			id;
 	t_list		*saved;
-	t_player	**players;
+	t_player	*player;
+	t_stack 	*players;
 
-	i = 0;
+	id = 1;
 	saved = files;
-	players = (t_player **)ft_memalloc(sizeof(t_player *) * n);
+	players = stack_init('p', NULL, 0);
 	while (files)
 	{
-		players[i] = parse_file(sfopen((char *) files->content, O_RDONLY),
-								(int) i + 1, files->content);
-		i++;
+		player = parse_file(sfopen((char *)
+			files->content, O_RDONLY), (int) id++, files->content);
+		players->push(players, to_list(player));
 		files = files->next;
+
+		t_list *lst = ft_lstnew(player, sizeof(t_player));
+		ft_printf("%s\n", ((t_player *)lst)->header->name);
 	}
 	ft_lstdel(&saved, (void (*)(void *, size_t)) free);
 	return (players);
@@ -93,5 +97,5 @@ t_corewar		*parse(int args, char **argv)
 	nof = parse_args(args, argv, &flags, &files);
 	if (nof > MAX_PLAYERS)
 		gexit(ERROR_MAX_PLAYERS, ft_itoa(MAX_PLAYERS), "", "");
-	return (init_corewar(parse_files(files, nof), nof, flags));
+	return (init_corewar(parse_files(files), nof, flags));
 }

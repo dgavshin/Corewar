@@ -27,7 +27,7 @@ add_subdirectory(${LIBFT_DIR})
 set(INC_DIRS ./)
 INCLUDE_DIRS(INC_DIRS)
 
-add_executable(${DST_NAME} ${PROJ_SOURCES} sources/register.c)
+add_executable(${DST_NAME} ${PROJ_SOURCES})
 target_include_directories(${DST_NAME} PUBLIC ${LIBFT_DIR}includes/)
 target_include_directories(${DST_NAME} PUBLIC ${INC_DIRS})
 target_link_libraries(${DST_NAME} libft)

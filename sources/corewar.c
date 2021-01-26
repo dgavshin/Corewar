@@ -12,7 +12,7 @@
 
 #include "corewar.h"
 
-t_corewar	*init_corewar(t_player **players, int n_of_players,
+t_corewar	*init_corewar(t_stack *players, int n_of_players,
 						t_corewar_flags *flags)
 {
 	t_corewar	*corewar;
@@ -21,12 +21,15 @@ t_corewar	*init_corewar(t_player **players, int n_of_players,
 	corewar->players = players;
 	corewar->players_num = n_of_players;
 	corewar->flags = flags;
+	corewar->cycles_to_die = CYCLE_TO_DIE;
 	return (corewar);
 }
 
 void		clean_corewar(t_corewar *corewar)
 {
-	clean_players(corewar->players, corewar->players_num);
+//	clean_players(corewar->players, corewar->players_num);
+	stack_clean(corewar->players);
+//	stack_clean(corewar->carriage_stack);
 	free(corewar->flags);
 	free(corewar);
 }
