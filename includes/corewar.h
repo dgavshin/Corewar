@@ -60,13 +60,9 @@ typedef struct				s_register
 typedef struct 				s_player
 {
 	unsigned char 			code[CHAMP_MAX_SIZE + 1];
-	struct s_register		regs[REG_NUMBER];
 	struct s_header			*header;
-	int 					cur_op;
-	int 					fine;
-	int 					CF;
-	int 					pos;
-	int 					id;
+	char					id;
+	struct s_player			*next;
 }							t_player;
 
 typedef struct 				s_corewar_flags
@@ -80,11 +76,25 @@ typedef struct 				s_corewar_flags
 	int 					ncurses;
 }							t_corewar_flags;
 
+
+typedef struct 				s_carriage
+{
+	struct s_carriage		*next;
+	struct s_register		regs[REG_NUMBER];
+	struct s_player			*player;
+	unsigned char 			lastlive;
+	unsigned char			cur_op;
+	unsigned char			fine;
+	unsigned char			CF;
+	unsigned int 			PC;
+	char					id;
+}							t_carriage;
+
 typedef struct				s_corewar
 {
-	struct s_stack			*players;
+	struct s_player			*players;
+	struct s_carriage		*carriages;
 	struct s_corewar_flags	*flags;
-	t_stack					*carriage_stack;
 	int 					players_num;
 	int 					last_alive;
 	int 					cycles_to_die;
@@ -107,7 +117,7 @@ void			usage(void);
 ** player.c
 */
 t_player		*create_player(int id, t_header *header);
-void			clean_player(void *content);
+void			clean_players(t_player *player);
 t_player		*get_player(t_corewar *core, int id);
 t_list			*to_list(t_player *player);
 t_player		*from_list(t_list *lst);
@@ -115,7 +125,7 @@ t_player		*from_list(t_list *lst);
 /*
 ** corewar.c
 */
-t_corewar		*init_corewar(t_stack *players, int n, t_corewar_flags *f);
+t_corewar		*init_corewar(t_player *players, int n, t_corewar_flags *f);
 void 			clean_corewar(t_corewar *corewar);
 
 /*
@@ -142,7 +152,16 @@ t_register		reglongmul(t_register a, t_register b);
 */
 
 void			print_field(t_corewar *core);
-
-
 void			init_game(t_corewar *core);
+
+/*
+** game.c
+*/
+void 			set_op_code(t_corewar *core, t_carriage *carriage);
+
+/*
+** carriage.c
+*/
+t_carriage		*new_carriage(t_player *player, t_carriage *next);
+void	 		clean_carriages(t_carriage *carriage);
 #endif

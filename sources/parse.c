@@ -39,6 +39,27 @@ static t_player	*parse_file(int fd, int id, char *path)
 	return (player);
 }
 
+
+t_player	*parse_files(t_list *files, int nof)
+{
+	t_list		*saved;
+	t_player	*next;
+	t_player	*player;
+
+	saved = files;
+	next = NULL;
+	while (files)
+	{
+		player = parse_file(sfopen((char *)files->content, O_RDONLY),
+					  (int)nof--, files->content);
+		player->next = next;
+		next = player;
+		files = files->next;
+	}
+	ft_lstdel(&saved, (void (*)(void *, size_t)) free);
+	return (player);
+}
+
 int			parse_args(int args, char **argv, t_corewar_flags **flags,
 					t_list **files)
 {
@@ -62,28 +83,6 @@ int			parse_args(int args, char **argv, t_corewar_flags **flags,
 	return (num_of_files);
 }
 
-t_stack *parse_files(t_list *files)
-{
-	int			id;
-	t_list		*saved;
-	t_player	*player;
-	t_stack 	*players;
-
-	id = 1;
-	saved = files;
-	players = stack_init('p', NULL, 0);
-	while (files)
-	{
-		player = parse_file(sfopen((char *)
-			files->content, O_RDONLY), (int) id++, files->content);
-		players->push(players, to_list(player));
-		files = files->next;
-	}
-	ft_lstdel(&saved, (void (*)(void *, size_t)) free);
-	return (players);
-}
-
-
 t_corewar		*parse(int args, char **argv)
 {
 	t_corewar_flags	*flags;
@@ -94,5 +93,5 @@ t_corewar		*parse(int args, char **argv)
 	nof = parse_args(args, argv, &flags, &files);
 	if (nof > MAX_PLAYERS)
 		gexit(ERROR_MAX_PLAYERS, ft_itoa(MAX_PLAYERS), "", "");
-	return (init_corewar(parse_files(files), nof, flags));
+	return (init_corewar(parse_files(files, nof), nof, flags));
 }

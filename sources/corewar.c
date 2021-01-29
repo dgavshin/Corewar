@@ -12,22 +12,37 @@
 
 #include "corewar.h"
 
-t_corewar	*init_corewar(t_stack *players, int n_of_players,
+t_corewar	*init_corewar(t_player *players, int n_of_players,
 						t_corewar_flags *flags)
 {
-	t_corewar	*corewar;
+	t_carriage	*carriage;
+	t_player	*p;
+	t_corewar	*core;
+	int			i;
 
-	corewar = (t_corewar *)ft_memalloc(sizeof(t_corewar));
-	corewar->players = players;
-	corewar->players_num = n_of_players;
-	corewar->flags = flags;
-	corewar->cycles_to_die = CYCLE_TO_DIE;
-	return (corewar);
+	core = (t_corewar *)ft_memalloc(sizeof(t_corewar));
+	core->players = players;
+	core->players_num = n_of_players;
+	core->flags = flags;
+	core->cycles_to_die = CYCLE_TO_DIE;
+	carriage = NULL;
+	i = 0;
+	p = core->players;
+	while (p)
+	{
+		carriage = new_carriage(p, carriage);
+		carriage->PC = (MEM_SIZE / core->players_num) * i++;
+		ft_memcpy(core->field + carriage->PC, p->code, p->header->size);
+		p = p->next;
+	}
+	core->carriages = carriage;
+	return (core);
 }
 
 void		clean_corewar(t_corewar *corewar)
 {
-	stack_clean(corewar->players, (void (*)(void *, size_t)) clean_player);
+	clean_players(corewar->players);
+	clean_carriages(corewar->carriages);
 	free(corewar->flags);
 	free(corewar);
 }
