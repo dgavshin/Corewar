@@ -35,19 +35,7 @@ int		main(int args, char **argv)
 	if (args < 2)
 		usage();
 	corewar = parse(args - 1, argv);
-	init_game(corewar);
-	print_field(corewar);
-
-	t_player *p = corewar->players;
-	t_carriage *c = corewar->carriages;
-	for (int i = 0; i < corewar->players_num; i++)
-	{
-		ft_printf("Player %s: %d; Carriage 1: %d\n", p->header->name, p->id,
-			c->id);
-		p = p->next;
-		c = c->next;
-	}
-
+	start_game(corewar);
 	clean_corewar(corewar);
 	return (0);
 }

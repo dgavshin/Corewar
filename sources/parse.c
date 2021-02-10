@@ -87,11 +87,12 @@ t_corewar		*parse(int args, char **argv)
 {
 	t_corewar_flags	*flags;
 	t_list			*files;
-	int				nof;
+	int				number_of_files;
 
 	files = NULL;
-	nof = parse_args(args, argv, &flags, &files);
-	if (nof > MAX_PLAYERS)
+	number_of_files = parse_args(args, argv, &flags, &files);
+	if (number_of_files > MAX_PLAYERS)
 		gexit(ERROR_MAX_PLAYERS, ft_itoa(MAX_PLAYERS), "", "");
-	return (init_corewar(parse_files(files, nof), nof, flags));
+	return (init_corewar(parse_files(files, number_of_files),
+					  number_of_files, flags));
 }

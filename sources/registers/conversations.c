@@ -12,9 +12,10 @@
 
 #include "corewar.h"
 
-t_register		ltor(unsigned long b)
+t_register		ltor(long b)
 {
 	unsigned int	shift;
+	int 			sign;
 	int				i;
 	t_register		a;
 
@@ -23,16 +24,16 @@ t_register		ltor(unsigned long b)
 	ft_bzero(&a, sizeof(t_register));
 	while (i < REG_SIZE)
 	{
-		a.val[i++] = (unsigned char) (b >> shift);
+		a.val[i++] = (b >> shift);
 		shift -= 8;
 	}
 	return (a);
 }
 
-unsigned long	rtol(t_register r)
+long	rtol(t_register r)
 {
 	int				i;
-	unsigned long	res;
+	long	res;
 
 	i = 0;
 	res = 0;
@@ -44,8 +45,13 @@ unsigned long	rtol(t_register r)
 	return (res);
 }
 
-int				int_representable(t_register r)
+int			register_is_null(t_register reg)
 {
-	return (rtol(r) < INT_MAX);
+	int i;
+
+	i = -1;
+	while (++i < REG_SIZE && reg.val[i])
+		;
+	return (i == REG_SIZE);
 }
 

@@ -26,43 +26,40 @@ void 	introduce(t_corewar *core)
 	}
 }
 
-int		has_alive_carriage(t_corewar *core)
-{
-	t_carriage	*l;
-
-	l = core->carriages;
-	while (l)
-	{
-		/*
-		** TODO: Добавить правильное условие
-		*/
-		if (l->lastlive)
-			return (1);
-		l = l->next;
-	}
-	return (0);
-}
-
 void	do_cycle(t_corewar *core)
 {
 	t_carriage 	*carriage;
 
 	carriage = core->carriages;
+	core->cycles++;
+	core->cycles_after_check++;
 	while (carriage)
 	{
+		set_op_if_need(carriage, core);
+		carriage->fine -= carriage->fine ? 1 : 0;
 		if (carriage->fine == 0)
-			set_op_code(core, carriage);
-		if (carriage->fine == 0)
+		{
+			if (carriage->op && validate_args(carriage, core))
+				carriage->op->invoke(carriage, core);
+			carriage->PC += get_shift_to_next_op(carriage);
+		}
 		carriage = carriage->next;
 	}
 }
 
-void	init_game(t_corewar *core)
+void	start_game(t_corewar *core)
 {
 	introduce(core);
-	while (has_alive_carriage(core))
+	while (core->carriage_num)
 	{
+		if (core->dump_cycle == core->cycles)
+		{
+			print_field(core);
+			exit(0);
+		}
 		do_cycle(core);
+		if (core->cycles_to_die == core->cycles_after_check
+			|| core->cycles_to_die <= 0)
+			check_cycles_to_die(core);
 	}
 }
-

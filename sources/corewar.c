@@ -25,17 +25,19 @@ t_corewar	*init_corewar(t_player *players, int n_of_players,
 	core->players_num = n_of_players;
 	core->flags = flags;
 	core->cycles_to_die = CYCLE_TO_DIE;
+	core->dump_cycle = -1;
 	carriage = NULL;
 	i = 0;
 	p = core->players;
 	while (p)
 	{
-		carriage = new_carriage(p, carriage);
+		carriage = create_carriage(p, carriage);
 		carriage->PC = (MEM_SIZE / core->players_num) * i++;
 		ft_memcpy(core->field + carriage->PC, p->code, p->header->size);
 		p = p->next;
 	}
 	core->carriages = carriage;
+	core->carriage_num = i;
 	return (core);
 }
 

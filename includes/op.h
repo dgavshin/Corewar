@@ -82,18 +82,4 @@ typedef struct		s_header
 	unsigned int	size;
 }					t_header;
 
-typedef struct		s_op
-{
-	char			name[6];
-	char			args;
-	char			mod[3];
-	char			id;
-	short			cost;
-	char			description[32];
-	char			a1;
-	char			a2;
-}					t_op;
-
-extern				t_op g_op_tab[16];
-
 #endif

@@ -48,20 +48,3 @@ t_player	*get_player(t_corewar *core, int id)
 	}
 	return (NULL);
 }
-
-t_list		*to_list(t_player *player)
-{
-	t_list	*lst;
-
-	lst = ft_memalloc(sizeof(t_list));
-	lst->content = player;
-	lst->content_size = sizeof(t_player);
-	return (lst);
-}
-
-t_player	*from_list(t_list *lst)
-{
-	if (lst->content_size == sizeof(t_player))
-		return ((t_player *)lst->content);
-	return (NULL);
-}

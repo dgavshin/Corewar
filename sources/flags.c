@@ -37,7 +37,4 @@ int		define_flag(char f, char *value, t_corewar_flags *flags)
 	return (1);
 }
 
-int 	is_flag(char *arg)
-{
-	return (arg && arg[0] == '-' && ft_strchr(ALLOWED_FLAGS, arg[1]));
-}
+
