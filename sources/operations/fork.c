@@ -16,8 +16,9 @@ void	sfork(t_carriage *carriage, t_corewar *core)
 {
 	int	address;
 
-	address = read_arg_value(core, carriage, 0) % IDX_MOD;
-	core->carriages = duplicate_carriage(carriage, core->carriages, address);
+	address = read_arg_value(core, carriage, 0);
+	core->carriages = duplicate_carriage(carriage, core->carriages,
+									  address % IDX_MOD);
 	core->carriage_num++;
 	if (core->flags->verbosity & V_OPERATIONS)
 		ft_printf("P %4d | fork %d (%d)\n",

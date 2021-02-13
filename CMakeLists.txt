@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.15.3)
 
 project(corewar)
 
-set(BUILD_FLAGS "-O3 -g -Wall -Werror -Wextra")
+set(BUILD_FLAGS " -g -Wall -Werror -Wextra")
 set(DST_NAME ${PROJECT_NAME})
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/sources/)
 set(INC_DIR ${PROJECT_SOURCE_DIR}/includes/)

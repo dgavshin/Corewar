@@ -90,7 +90,7 @@ t_carriage	*duplicate_carriage(t_carriage *carriage, t_carriage *next,
 	while (++i < REG_NUMBER)
 		new->regs[i] = carriage->regs[i];
 	new->cf = carriage->cf;
-	new->pc = round_address(carriage->pc + address);
+	new->pc = carriage->pc + address;
 	new->lastlive = carriage->lastlive;
 	new->fine = 0;
 	return (new);

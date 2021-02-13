@@ -29,6 +29,8 @@ void	do_cycle(t_corewar *core)
 	core->cycles_after_check++;
 	if (core->flags->verbosity & V_CYCLES)
 		log_cycle(core->cycles);
+	if (core->cycles == 11536)
+		ft_putstr("");
 	while (carriage)
 	{
 		set_op_if_need(carriage, core);

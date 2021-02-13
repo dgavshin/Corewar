@@ -18,7 +18,8 @@ void	zjmp(t_carriage *carriage, t_corewar *core)
 
 	address = read_arg_value(core, carriage, 0);
 	if (carriage->cf)
-		carriage->pc = carriage->pc + (address % IDX_MOD);
+		carriage->pc = round_address(carriage->pc + (address % IDX_MOD));
+	carriage->pc = round_address(carriage->pc);
 	if (core->flags->verbosity & V_OPERATIONS)
 	{
 		ft_printf("P %4d | zjmp %d ", carriage->id, address);
