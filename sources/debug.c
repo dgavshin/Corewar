@@ -6,43 +6,30 @@
 /*   By: acyrenna <acyrenna@school21.ru>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 21:04:10 by acyrenna          #+#    #+#             */
-/*   Updated: 2021/01/26 21:07:12 by acyrenna         ###   ########.fr       */
+/*   Updated: 2021/02/13 15:28:10 by acyrenna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "corewar.h"
 
-char g_colors[8][9] = {"\033[0m", "\033[1;37m", "\033[1;34m", "\033[1;35m",
-					 "\033[1;36m", "\033[1;33m", "\033[1;32m", "\033[1;31m"};
+char *g_error_max_players = "The maximum allowed player limit has been "\
+"exceeded. Max value: %s";
+char *g_error_invalid_file = "Can't open file \"%s\"";
+char *g_error_invalid_file_read = "Can't read from file \"%s\". Expected "\
+"number of bytes read: %s";
+char *g_error_invalid_magic_header = "File \"%s\" has invalid magic header. "\
+"Expected: %s";
+char *g_error_champ_max_size = "File %s has too large a code (%s bytes > "\
+"%s bytes)";
+char *g_error_diff_champ_size = "File %s has a code size that differ "\
+"from what its header says";
+char *g_error_small_file = "File %s is too small to be a champion";
 
-//void	print_field(t_corewar *core)
-//{
-//	int	i;
-//	int	j;
-//
-//	i = 0;
-//	while (i < core->players_num)
-//	{
-//		j = MEM_SIZE / core->players_num * i;
-//		while (j < MEM_SIZE / core->players_num * (i + 1))
-//		{
-//			if (j % 64 == 0)
-//				ft_putchar('\n');
-//			ft_putstr(core->field[j] ? g_colors[i + 2 % 8] : g_colors[1]);
-//			ft_printf("%02x ", core->field[j]);
-//			j++;
-//		}
-//		ft_putstr(g_colors[0]);
-//		i++;
-//	}
-//	ft_putstr("\n");
-//}
-
-inline void	print_last_alive(t_corewar *core)
+void		print_last_alive(t_corewar *core)
 {
 	ft_printf("Contestant %d, \"%s\", has won !\n",
-			  core->last_alive->id,
-			  core->last_alive->header->name);
+		core->last_alive->id,
+		core->last_alive->header->name);
 }
 
 void		print_field(t_corewar *core)

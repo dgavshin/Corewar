@@ -1,76 +1,69 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   field.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acyrenna <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/02/13 15:11:21 by acyrenna          #+#    #+#             */
+/*   Updated: 2021/02/13 15:41:38 by acyrenna         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "corewar.h"
 
-void		write_to_register(t_corewar *core, t_register *reg, int size,
-						int addr)
-{
-	unsigned char i;
-
-	i = 0;
-	while (size)
-	{
-		reg->val[size - 1] = core->field[addr + size - 1 % MEM_SIZE] & 0xFF;
-		i += 8;
-		size--;
-	}
-}
-
-void 		write_register(t_corewar *core, t_register reg,
-					  unsigned int addr, int size)
+void			write_int(t_corewar *core, int value, int addr, int size)
 {
 	int	i;
 
 	i = 0;
 	while (size)
 	{
-		core->field[addr + size - 1 % MEM_SIZE] = reg.val[size - 1] & 0xFF;
+		core->field[round_address(addr + size - 1)] = ((value >> i) & 0xFF);
 		i += 8;
 		size--;
 	}
 }
 
-int			read_int(t_corewar *core, unsigned int address, int size)
+int				read_int(t_corewar *core, int address, int size)
 {
-	int 	sign;
-	int		res;
+	int		result;
+	int		sign;
+	int		i;
 
-	address %= MEM_SIZE;
-	sign = (core->field[address] & 0x80) > 0;
-	size = (size - 1) * 8;
-	res = 0;
-	while (size >= 0)
+	result = 0;
+	sign = (core->field[round_address(address)] & 0x80);
+	i = 0;
+	while (size)
 	{
 		if (sign)
-			res += (0xff - core->field[address++ % MEM_SIZE]) << size;
+			result += ((core->field[round_address(address + size - 1)] ^ 0xFF)
+					<< (i++ * 8));
 		else
-			res += core->field[address++ % MEM_SIZE] << size;
-		size -= 8;
+			result += core->field[round_address(address + size - 1)]
+					<< (i++ * 8);
+		size--;
 	}
 	if (sign)
-		res = ~res;
-	return (res);
+		result = ~(result);
+	return (result);
 }
 
-unsigned char 	read_byte(t_corewar *core, t_carriage *carriage, int shift)
+unsigned char	read_byte(t_corewar *core, t_carriage *carriage, int shift)
 {
-	return (core->field[carriage->PC + shift]);
+	return (core->field[round_address(carriage->pc + shift)]);
 }
 
-void	set_op_if_need(t_carriage *carriage, t_corewar *core)
+void			set_op_if_need(t_carriage *carriage, t_corewar *core)
 {
-	unsigned char opcode;
-
 	if (carriage->fine != 0)
 		return ;
-	opcode = core->field[carriage->PC % MEM_SIZE];
-	if (opcode >= 1 && opcode <= 16)
+	carriage->cur_opcode = core->field[round_address(carriage->pc)];
+	if (carriage->cur_opcode >= 1 && carriage->cur_opcode <= 16)
 	{
-		carriage->op = &g_op_tab[opcode - 1];
+		carriage->op = &g_op_tab[carriage->cur_opcode - 1];
 		carriage->fine = carriage->op->cost;
 	}
 	else
 		carriage->op = NULL;
 }
-
-
-
-

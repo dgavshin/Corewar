@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   define.c                                           :+:      :+:    :+:   */
+/*   validate.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acyrenna <acyrenna@school21.ru>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 21:05:50 by acyrenna          #+#    #+#             */
-/*   Updated: 2021/01/26 21:05:55 by acyrenna         ###   ########.fr       */
+/*   Updated: 2021/02/13 15:53:44 by acyrenna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "corewar.h"
-
-void set_arg_types_manual();
 
 int		map_to_type(int bytes)
 {
@@ -25,7 +23,7 @@ int		map_to_type(int bytes)
 	return (0);
 }
 
-void set_arg_types_manual(t_carriage *carriage)
+void	set_arg_types_manual(t_carriage *carriage)
 {
 	int i;
 
@@ -34,9 +32,9 @@ void set_arg_types_manual(t_carriage *carriage)
 		carriage->types[i] = carriage->op->mod[i];
 }
 
-int 	set_and_validate_arg_types(t_carriage *carriage, t_corewar *core)
+int		set_and_validate_arg_types(t_carriage *carriage, t_corewar *core)
 {
-	int 	i;
+	int		i;
 	int		types;
 
 	if (!carriage->op->has_types)
@@ -44,7 +42,7 @@ int 	set_and_validate_arg_types(t_carriage *carriage, t_corewar *core)
 		set_arg_types_manual(carriage);
 		return (1);
 	}
-	types = core->field[(carriage->PC + 1) % MEM_SIZE];
+	types = core->field[round_address(carriage->pc + 1)];
 	carriage->types[0] = map_to_type(types >> 6 & 0x3);
 	carriage->types[1] = map_to_type(types >> 4 & 0x3);
 	carriage->types[2] = map_to_type(types >> 2 & 0x3);
@@ -55,7 +53,7 @@ int 	set_and_validate_arg_types(t_carriage *carriage, t_corewar *core)
 	return (1);
 }
 
-int 	validate_args(t_carriage *carriage, t_corewar *core)
+int		validate_args(t_carriage *carriage, t_corewar *core)
 {
 	long	value;
 	int		shift;

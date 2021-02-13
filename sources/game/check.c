@@ -1,18 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   check.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acyrenna <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/02/13 15:11:26 by acyrenna          #+#    #+#             */
+/*   Updated: 2021/02/13 15:34:13 by acyrenna         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "corewar.h"
-
-static void		reset_lives_nums(t_corewar *core)
-{
-	t_player	*player;
-
-	player = core->players;
-	while (player)
-	{
-		player->previous_lives= player->current_lives;
-		player->current_lives = 0;
-		player = player->next;
-	}
-	core->lives_num = 0;
-}
 
 static int		is_died(t_corewar *core, t_carriage *carriage)
 {
@@ -33,11 +31,11 @@ static void		delete_died_carriages(t_corewar *core)
 		{
 			current = current->next;
 			if (core->carriages == delete)
-				core->carriages= current;
+				core->carriages = current;
 			if (previous)
 				previous->next = current;
-//			if (core->log & DEATH_LOG)
-//				log_cursor_death(vm, delete);
+			if (core->flags->verbosity & V_DEATHS)
+				log_cursor_death(core, delete);
 			ft_memdel((void **)&delete);
 		}
 		else
@@ -54,10 +52,10 @@ void			check_cycles_to_die(t_corewar *core)
 	if (core->checks_num == MAX_CHECKS || core->lives_num >= NBR_LIVE)
 	{
 		core->cycles_to_die -= CYCLE_DELTA;
-//		if (vm->log & CYCLE_LOG)
-//			log_cycles_to_die(vm->cycles_to_die);
 		core->checks_num = 0;
+		if (core->flags->verbosity & V_CYCLES)
+			log_cycles_to_die(core->cycles_to_die);
 	}
-	reset_lives_nums(core);
+	core->lives_num = 0;
 	core->cycles_after_check = 0;
 }

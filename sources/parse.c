@@ -6,93 +6,96 @@
 /*   By: acyrenna <acyrenna@school21.ru>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 22:40:25 by acyrenna          #+#    #+#             */
-/*   Updated: 2021/01/26 21:06:00 by acyrenna         ###   ########.fr       */
+/*   Updated: 2021/02/13 15:33:43 by acyrenna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "corewar.h"
 #include "op.h"
 
-static t_player	*parse_file(int fd, int id, char *path)
+static t_player		*parse_file(int fd, char *path, t_player *next)
 {
-	t_header *header;
-	t_player *player;
-	char buffer[2048];
+	t_header		*header;
+	t_player		*player;
+	char			buffer[2048];
 
 	header = (t_header *)ft_memalloc(sizeof(t_header));
-	player = create_player(id, header);
+	player = create_player(header, next);
+	if (get_file_size(path) <= 0x88F)
+		gexit(g_error_small_file, path, "", "");
 	sfread(fd, buffer, COREWAR_MAGIC_LEN, path);
-	if (ft_btol(*(unsigned int *) buffer) != COREWAR_BE_INT_MAGIC)
-		gexit(ERROR_INVALID_MAGIC_HEADER, path, COREWAR_ERR_MAGIC, "");
+	if (ft_btol(*(unsigned int *)buffer) != COREWAR_BE_INT_MAGIC)
+		gexit(g_error_invalid_magic_header, path, COREWAR_ERR_MAGIC, "");
 	sfread(fd, header->name, PROG_NAME_LENGTH, path);
 	sfread(fd, buffer, 4, path);
-	header->size = ft_btol(*(unsigned int *) sfread(fd, buffer, 4, path));
+	header->size = ft_btol(*(unsigned int *)sfread(fd, buffer, 4, path));
 	sfread(fd, header->comment, COMMENT_LENGTH, path);
 	sfread(fd, buffer, 4, path);
+	if (header->size > CHAMP_MAX_SIZE)
+		gexit(g_error_champ_max_size, path, ft_itoa((int)header->size),
+			ft_itoa(CHAMP_MAX_SIZE));
 	if (read(fd, player->code, (header->size > CHAMP_MAX_SIZE ? CHAMP_MAX_SIZE
 	: header->size)) != header->size || read(fd, buffer, 1) != 0)
-		gexit(ERROR_DIFF_CHAMP_SIZE, path, "", "");
-	if (header->size > CHAMP_MAX_SIZE)
-		gexit(ERROR_CHAMP_MAX_SIZE, path, ft_itoa((int) header->size),
-			  ft_itoa(CHAMP_MAX_SIZE));
+		gexit(g_error_diff_champ_size, path, "", "");
 	close(fd);
 	return (player);
 }
 
-
-t_player	*parse_files(t_list *files, int nof)
+static int			parse_player(char **argv, int argc, int idx, t_corewar
+						*core)
 {
-	t_list		*saved;
-	t_player	*next;
-	t_player	*player;
+	int is_n_flag;
+	int id;
 
-	saved = files;
-	next = NULL;
-	while (files)
+	id = 1;
+	is_n_flag = ft_strequ(argv[idx], "-n");
+	if (is_n_flag && argc < 3)
+		usage();
+	if (is_n_flag)
 	{
-		player = parse_file(sfopen((char *)files->content, O_RDONLY),
-					  (int)nof--, files->content);
-		player->next = next;
-		next = player;
-		files = files->next;
+		if ((id = ft_atoi(argv[idx + 1])) < 1 || id > MAX_PLAYERS ||
+			find_player_by_id(core, id) != NULL)
+			usage();
+		idx += 2;
 	}
-	ft_lstdel(&saved, (void (*)(void *, size_t)) free);
-	return (player);
+	else if (core->players)
+		id = core->players->id + 1;
+	core->players = parse_file(
+			sfopen(argv[idx], O_RDONLY), argv[idx], core->players);
+	core->players->id = id;
+	core->players_num++;
+	return (is_n_flag ? 2 : 0);
 }
 
-int			parse_args(int args, char **argv, t_corewar_flags **flags,
-					t_list **files)
+static void			parse_args(int args, char **argv, t_corewar *core)
 {
-	int 	num_of_files;
-	int		i;
+	int	code;
+	int	i;
 
 	i = 1;
-	num_of_files = 0;
-	*flags = (t_corewar_flags *)ft_memalloc(sizeof(t_corewar_flags));
-	while (i <= args)
+	core->flags = init_flags();
+	while (args > 0)
 	{
-		if (argv[i][0] == '-')
-			i += define_flag(argv[i][1], argv[i + 1], *flags);
+		if (argv[i][0] == '-' && !ft_strequ(argv[i], "-n"))
+			code = define_flag(argv, i, core->flags);
 		else
-		{
-			*files = ft_lstcreate(*files, argv[i], ft_strlen(argv[i]));
-			num_of_files++;
-		}
-		i++;
+			code = parse_player(argv, args, i, core);
+		i = i + code + 1;
+		args = args - code - 1;
 	}
-	return (num_of_files);
 }
 
-t_corewar		*parse(int args, char **argv)
+t_corewar			*parse(int args, char **argv)
 {
-	t_corewar_flags	*flags;
-	t_list			*files;
-	int				number_of_files;
+	t_corewar		*core;
 
-	files = NULL;
-	number_of_files = parse_args(args, argv, &flags, &files);
-	if (number_of_files > MAX_PLAYERS)
-		gexit(ERROR_MAX_PLAYERS, ft_itoa(MAX_PLAYERS), "", "");
-	return (init_corewar(parse_files(files, number_of_files),
-					  number_of_files, flags));
+	core = init_corewar();
+	parse_args(args, argv, core);
+	if (core->players_num > MAX_PLAYERS)
+		gexit(g_error_max_players, ft_itoa(MAX_PLAYERS), "", "");
+	if (core->players_num == 0)
+		usage();
+	init_carriages(core);
+	core->last_alive = core->players;
+	return (core);
 }
