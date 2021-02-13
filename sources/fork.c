@@ -6,7 +6,7 @@
 /*   By: acyrenna <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/13 15:09:52 by acyrenna          #+#    #+#             */
-/*   Updated: 2021/02/13 15:44:49 by acyrenna         ###   ########.fr       */
+/*   Updated: 2021/02/14 00:30:24 by acyrenna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	sfork(t_carriage *carriage, t_corewar *core)
 
 	address = read_arg_value(core, carriage, 0);
 	core->carriages = duplicate_carriage(carriage, core->carriages,
-									  address % IDX_MOD);
+									address % IDX_MOD);
 	core->carriage_num++;
 	if (core->flags->verbosity & V_OPERATIONS)
 		ft_printf("P %4d | fork %d (%d)\n",
